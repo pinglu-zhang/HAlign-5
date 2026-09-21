@@ -1,8 +1,8 @@
 # HAlign-5
 
-[![Downloads](https://anaconda.org/malab/halign5/badges/downloads.svg)](https://anaconda.org/malab/halign5)
-[![License](https://anaconda.org/malab/halign5/badges/license.svg)](https://anaconda.org/malab/halign5)
-[![Platforms](https://anaconda.org/malab/halign5/badges/platforms.svg)](https://anaconda.org/malab/halign5)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](CMakeLists.txt)
+[![Last commit](https://img.shields.io/github/last-commit/pinglu-zhang/HAlign-5)](https://github.com/pinglu-zhang/HAlign-5/commits/main)
 
 [HAlign 4: A New Strategy for Rapidly Aligning Millions of Sequences.](https://doi.org/10.1093/bioinformatics/btae718)
 
@@ -17,6 +17,9 @@ Documentation:
 ## Install (Conda)
 
 Conda is the recommended installation method for end users.
+
+> **Note:** the `halign5` package is not published on the `malab` channel yet.
+> Until it is, install from source (see [`docs/install.md`](docs/install.md)).
 
 ```bash
 conda install -c malab halign5
