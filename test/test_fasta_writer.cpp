@@ -10,9 +10,9 @@
 
 namespace fs = std::filesystem;
 
-// perf gating：只有设置 HALIGN4_RUN_PERF=1 才会执行性能用例
+// perf gating：只有设置 HALIGN5_RUN_PERF=1 才会执行性能用例
 static bool perfEnabled() {
-    const char* v = std::getenv("HALIGN4_RUN_PERF");
+    const char* v = std::getenv("HALIGN5_RUN_PERF");
     return (v != nullptr) && (*v != '\0') && (std::string(v) != "0");
 }
 static bool shouldSkipPerf() { return !perfEnabled(); }
@@ -44,7 +44,7 @@ TEST_SUITE("write_fasta")
 {
     TEST_CASE("SeqWriter(FASTA) - buffered flush on flush() and destructor")
     {
-        auto dir = makeTempDir("halign4_tests_fasta_writer");
+        auto dir = makeTempDir("halign5_tests_fasta_writer");
         fs::path out = dir / "out.fasta";
 
         // 使用一个很大的阈值，确保 write() 过程中不会自动触发 flushBuffer_。
@@ -84,7 +84,7 @@ TEST_SUITE("write_fasta")
 
     TEST_CASE("SeqWriter(FASTA) - disable buffer (threshold=0)")
     {
-        auto dir = makeTempDir("halign4_tests_fasta_writer_nobuf");
+        auto dir = makeTempDir("halign5_tests_fasta_writer_nobuf");
         fs::path out = dir / "out.fasta";
 
         seq_io::SeqWriter w(out, /*line_width=*/80, /*buffer_threshold_bytes=*/0);
@@ -117,7 +117,7 @@ TEST_SUITE("write_fasta")
         constexpr std::size_t N   = 10000;
         constexpr std::size_t LEN = 30000;
 
-        auto dir = makeTempDir("halign4_tests_write_fasta_perf");
+        auto dir = makeTempDir("halign5_tests_write_fasta_perf");
         fs::path out_buf   = dir / "out_buffered.fasta";
         fs::path out_nobuf = dir / "out_nobuf.fasta";
 
@@ -174,7 +174,7 @@ TEST_SUITE("write_fasta")
 
     TEST_CASE("SeqWriter(SAM) - smoke")
     {
-        auto dir = makeTempDir("halign4_tests_write_sam_smoke");
+        auto dir = makeTempDir("halign5_tests_write_sam_smoke");
         fs::path out = dir / "out.sam";
 
         auto w = seq_io::SeqWriter::Sam(out, /*buffer_threshold_bytes=*/1024);

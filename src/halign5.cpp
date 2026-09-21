@@ -198,7 +198,7 @@ int main(int argc, char** argv) {
         setupLogger();
 
         Options opt;
-        CLI::App app{"halign4"};
+        CLI::App app{"halign5"};
         setupCli(app, opt);
         app.formatter(std::make_shared<CustomFormatter>());
         CLI11_PARSE(app, argc, argv);
@@ -215,7 +215,7 @@ int main(int argc, char** argv) {
 
         // 打印参数
         logParsedOptions(opt);
-        spdlog::info("Starting halign4 version {}...", VERSION);
+        spdlog::info("Starting halign5 version {}...", VERSION);
 
         // 校验参数
         checkOption(opt);
@@ -257,7 +257,7 @@ int main(int argc, char** argv) {
             spdlog::info("All sequences processed; final output written to {}", opt.output);
 
             cleanupWorkdir(opt);
-            spdlog::info("halign4 End!");
+            spdlog::info("halign5 End!");
             return 0;
         }
         else if (opt.reference_path.empty())
@@ -311,15 +311,15 @@ int main(int argc, char** argv) {
 
         cleanupWorkdir(opt);
 
-        spdlog::info("halign4 End!");
+        spdlog::info("halign5 End!");
         return 0;
     } catch (const std::exception &e) {
         spdlog::error("Fatal error: {}", e.what());
-        spdlog::error("halign4 End!");
+        spdlog::error("halign5 End!");
         return 1;
     } catch (...) {
         spdlog::error("Fatal error: unknown exception");
-        spdlog::error("halign4 End!");
+        spdlog::error("halign5 End!");
         return 1;
     }
 }

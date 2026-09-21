@@ -1,4 +1,4 @@
-# HAlign-4 DNA5 scoring matrix example.
+# HAlign-5 DNA5 scoring matrix example.
 # Order is A C G T N for both rows and columns.
 # You can pass this file with: -s score.example.tsv
 #

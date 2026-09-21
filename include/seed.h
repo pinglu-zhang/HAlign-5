@@ -1,5 +1,5 @@
-#ifndef HALIGN4_SEED_H
-#define HALIGN4_SEED_H
+#ifndef HALIGN5_SEED_H
+#define HALIGN5_SEED_H
 
 #include <cstdint>
 #include <type_traits>
@@ -299,4 +299,4 @@ namespace minimizer
 } // namespace minimizer
 
 
-#endif //HALIGN4_SEED_H
+#endif //HALIGN5_SEED_H

@@ -11,12 +11,12 @@
 // ================================================================
 // 这个文件把 extractMinimizer 的性能测试接入 doctest：
 // - 默认跳过（避免 CI/普通单测跑很久）
-// - 通过环境变量 HALIGN4_RUN_PERF=1 显式启用
+// - 通过环境变量 HALIGN5_RUN_PERF=1 显式启用
 // - 测试里不做严格性能断言，只打印耗时/吞吐，用于人工对比实现改动前后表现
 // ================================================================
 
 static bool perfEnabled() {
-    const char* v = std::getenv("HALIGN4_RUN_PERF");
+    const char* v = std::getenv("HALIGN5_RUN_PERF");
     return (v != nullptr) && (*v != '\0') && (std::string(v) != "0");
 }
 static bool shouldSkipPerf() { return !perfEnabled(); }
@@ -47,21 +47,21 @@ TEST_SUITE("minimizer" * doctest::skip(shouldSkipPerf()))
     TEST_CASE("extractMinimizer - throughput")
     {
         // 可通过环境变量覆盖不同规模，便于你本地调参
-        // HALIGN4_MINIMIZER_SEQ_LEN=10000
-        // HALIGN4_MINIMIZER_NUM_SEQS=200
-        // HALIGN4_MINIMIZER_ROUNDS=5
+        // HALIGN5_MINIMIZER_SEQ_LEN=10000
+        // HALIGN5_MINIMIZER_NUM_SEQS=200
+        // HALIGN5_MINIMIZER_ROUNDS=5
         auto getenv_u64 = [](const char* name, std::uint64_t defv) {
             if (const char* p = std::getenv(name); p && *p) return static_cast<std::uint64_t>(std::strtoull(p, nullptr, 10));
             return defv;
         };
 
-        const std::size_t seq_len  = static_cast<std::size_t>(getenv_u64("HALIGN4_MINIMIZER_SEQ_LEN",  30000));
-        const std::size_t num_seqs = static_cast<std::size_t>(getenv_u64("HALIGN4_MINIMIZER_NUM_SEQS", 100000));
-        const std::size_t rounds   = static_cast<std::size_t>(getenv_u64("HALIGN4_MINIMIZER_ROUNDS",   1));
+        const std::size_t seq_len  = static_cast<std::size_t>(getenv_u64("HALIGN5_MINIMIZER_SEQ_LEN",  30000));
+        const std::size_t num_seqs = static_cast<std::size_t>(getenv_u64("HALIGN5_MINIMIZER_NUM_SEQS", 100000));
+        const std::size_t rounds   = static_cast<std::size_t>(getenv_u64("HALIGN5_MINIMIZER_ROUNDS",   1));
 
         // 参数：k/w
-        const std::size_t k = static_cast<std::size_t>(getenv_u64("HALIGN4_MINIMIZER_K", 15));
-        const std::size_t w = static_cast<std::size_t>(getenv_u64("HALIGN4_MINIMIZER_W", 10));
+        const std::size_t k = static_cast<std::size_t>(getenv_u64("HALIGN5_MINIMIZER_K", 15));
+        const std::size_t w = static_cast<std::size_t>(getenv_u64("HALIGN5_MINIMIZER_W", 10));
 
         MESSAGE("seq_len=" << seq_len << " num_seqs=" << num_seqs << " rounds=" << rounds << " k=" << k << " w=" << w);
 

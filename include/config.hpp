@@ -42,7 +42,7 @@
 // ------------------------------------------------------------------
 #define VERSION "2.0.0"                   // 版本号，程序启动时可打印以便追踪
 #define LOGGER_NAME "logger"              // 默认日志器名称（用于 spdlog 注册）
-#define LOGGER_FILE "halign4.log"         // 默认日志文件名（相对于工作目录）
+#define LOGGER_FILE "halign5.log"         // 默认日志文件名（相对于工作目录）
 #define CONFIG_FILE "config.json"         // 默认配置文件路径（如果将来支持外部配置）
 
 const std::string MINIPOA_CMD = "minipoa {input} -S -t {thread} -r1 > {output}"; // Minipoa 多序列比对命令模板示例
@@ -268,7 +268,7 @@ static void setupCli(CLI::App& app, Options& opt) {
     app.description("HAlign 4: A New Strategy for Rapidly Aligning Millions of Sequences");
 
     // 设置版本标志：--version 打印版本并退出，-h/--help 也会显示版本信息
-    app.set_version_flag("-v,--version", std::string("halign4 version ") + VERSION);
+    app.set_version_flag("-v,--version", std::string("halign5 version ") + VERSION);
     app.set_help_all_flag("--detail-help", "Print detailed help message and exit");
 
    // 必须参数（同时支持短参数和长参数）
@@ -616,9 +616,9 @@ public:
 	std::string make_usage(const CLI::App* app, std::string name) const override {
 		std::ostringstream out;
 		out << "Usage:\n"
-			<< "  ./halign4 -i <input.fa> -o <output.fa> [options]\n\n"
+			<< "  ./halign5 -i <input.fa> -o <output.fa> [options]\n\n"
 			<< "Example:\n"
-			<< "  ./halign4 -i input.fa -o results/output.fa -t 8\n\n";
+			<< "  ./halign5 -i input.fa -o results/output.fa -t 8\n\n";
 		return out.str();
 	}
 };

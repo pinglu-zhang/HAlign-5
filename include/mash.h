@@ -1,5 +1,5 @@
-#ifndef HALIGN4_MASH_H
-#define HALIGN4_MASH_H
+#ifndef HALIGN5_MASH_H
+#define HALIGN5_MASH_H
 
 #include <cstddef>
 #include <cstdint>
@@ -149,5 +149,5 @@ namespace mash
 
 } // namespace mash
 
-#endif //HALIGN4_MASH_H
+#endif //HALIGN5_MASH_H
 

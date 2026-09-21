@@ -1,5 +1,5 @@
-#ifndef HALIGN4_UTILS_H
-#define HALIGN4_UTILS_H
+#ifndef HALIGN5_UTILS_H
+#define HALIGN5_UTILS_H
 
 // ================================================================
 // utils.h - 文件与序列 I/O 公共声明（详细中文注释）
@@ -25,7 +25,7 @@
 
 #if __has_include(<curl/curl.h>)
 #include <curl/curl.h>
-#define HALIGN4_HAVE_LIBCURL 1
+#define HALIGN5_HAVE_LIBCURL 1
 #endif
 
 namespace fs = std::filesystem;
@@ -590,5 +590,5 @@ private:
     std::chrono::steady_clock::time_point start_time_;   // 开始时间
 };
 
-#endif //HALIGN4_UTILS_H
+#endif //HALIGN5_UTILS_H
 

@@ -1,14 +1,14 @@
-# Install HAlign-4
+# Install HAlign-5
 
-This document explains how to install **HAlign-4 / halign4**.
+This document explains how to install **HAlign-5 / halign5**.
 
 - If you want a quick install, prefer **Conda** (see the project `README.md`).
 - If you want to build from source (development / customizing), follow the steps below.
 
 > Environment note
 >
-> `halign4` may call external MSA tools (`minipoa`, `mafft`, `clustalo`) during argument validation (template self-check).
-> Please make sure `halign4` and those external tools are installed in the **same environment** (e.g. all in WSL, or all native Linux).
+> `halign5` may call external MSA tools (`minipoa`, `mafft`, `clustalo`) during argument validation (template self-check).
+> Please make sure `halign5` and those external tools are installed in the **same environment** (e.g. all in WSL, or all native Linux).
 
 ---
 
@@ -45,8 +45,8 @@ sudo apt-get install -y \
 ### 1.2 Clone and build
 
 ```bash
-git clone https://github.com/pinglu-zhang/HAlign-4.git
-cd HAlign-4
+git clone https://github.com/pinglu-zhang/HAlign-5.git
+cd HAlign-5
 
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j
@@ -54,20 +54,20 @@ cmake --build build -j
 
 The binary will be:
 
-- `build/halign4`
+- `build/halign5`
 
 ### 1.3 Quick sanity check
 
 ```bash
-./build/halign4 --version
-./build/halign4 -h
+./build/halign5 --version
+./build/halign5 -h
 ```
 
 ---
 
 ## 2. Install / prepare external MSA tools
 
-HAlign-4 uses an external MSA method to align consensus and insertion sequences.
+HAlign-5 uses an external MSA method to align consensus and insertion sequences.
 
 ### 2.1 MAFFT
 
@@ -143,11 +143,11 @@ minipoa -h
 
 ### 3.1 `msa-tool template test failed` at startup
 
-During argument validation, `halign4` runs a tiny self-check command via the system shell.
+During argument validation, `halign5` runs a tiny self-check command via the system shell.
 
 Checklist:
 
-1. Verify the tool is available on PATH **in the same environment** where `halign4` runs:
+1. Verify the tool is available on PATH **in the same environment** where `halign5` runs:
 
 ```bash
 command -v mafft

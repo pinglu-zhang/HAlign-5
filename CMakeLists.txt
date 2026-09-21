@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.18)
-project(HAlign4)
+project(HAlign5)
 
 set(CMAKE_CXX_STANDARD 20)
-option(HALIGN4_NATIVE_ARCH "Enable -march=native" OFF)
+option(HALIGN5_NATIVE_ARCH "Enable -march=native" OFF)
 
 # 如果用户没有指定 CMAKE_BUILD_TYPE，则默认设置为 Release，以便默认开启优化构建
 if(NOT DEFINED CMAKE_BUILD_TYPE)
@@ -21,8 +21,8 @@ include_directories(
         ${PROJECT_SOURCE_DIR}/extern/WFA2-lib
 )
 
-add_executable(halign4
-        src/halign4.cpp
+add_executable(halign5
+        src/halign5.cpp
         src/utils/preprocess.cpp
         src/utils/seq_io.cpp
         src/utils/cmd.cpp
@@ -47,8 +47,8 @@ add_executable(halign4
 
 find_package(CURL)
 if (CURL_FOUND)
-    target_link_libraries(halign4 PRIVATE CURL::libcurl)
-    target_compile_definitions(halign4 PRIVATE HALIGN4_HAVE_LIBCURL=1)
+    target_link_libraries(halign5 PRIVATE CURL::libcurl)
+    target_compile_definitions(halign5 PRIVATE HALIGN5_HAVE_LIBCURL=1)
 else()
     message(STATUS "libcurl not found; downloadFile will fall back to calling curl/wget at runtime")
 endif()
@@ -56,8 +56,8 @@ endif()
 
 find_package(ZLIB)
 if (ZLIB_FOUND)
-    target_link_libraries(halign4 PRIVATE ZLIB::ZLIB)
-    target_compile_definitions(halign4 PRIVATE HALIGN4_HAVE_ZLIB=1)
+    target_link_libraries(halign5 PRIVATE ZLIB::ZLIB)
+    target_compile_definitions(halign5 PRIVATE HALIGN5_HAVE_ZLIB=1)
 else()
     message(STATUS "zlib not found; compression support will be disabled or limited")
 endif()
@@ -81,30 +81,30 @@ set(WFA2LIB_BUILD_TESTS OFF CACHE BOOL "Do not register WFA2-lib tests" FORCE)
 
 add_subdirectory(extern/WFA2-lib)
 
-target_link_libraries(halign4 PRIVATE OpenMP::OpenMP_CXX wfa2::wfa2cpp_static)
+target_link_libraries(halign5 PRIVATE OpenMP::OpenMP_CXX wfa2::wfa2cpp_static)
 
 # 在 Release 时添加激进的优化标志：GCC/Clang 与 MSVC 分别处理
 if (MSVC)
     # MSVC 优化：/O2 开启优化，/arch:AVX2 请求 AVX2 指令集（可根据需要改为 AVX 或 AVX512），/GL 全局优化
-    target_compile_options(halign4 PRIVATE
+    target_compile_options(halign5 PRIVATE
         $<$<CONFIG:Release>:/O2>
         $<$<CONFIG:Release>:/arch:AVX2>
         $<$<CONFIG:Release>:/GL>
     )
     # 链接时启用链接时期优化（LTCG）
-    target_link_options(halign4 PRIVATE
+    target_link_options(halign5 PRIVATE
         $<$<CONFIG:Release>:/LTCG>
     )
 else()
     # GCC / Clang: -O3, -march=native, -flto, -pipe
-    target_compile_options(halign4 PRIVATE
+    target_compile_options(halign5 PRIVATE
         $<$<CONFIG:Release>:-O3>
-            $<$<AND:$<CONFIG:Release>,$<BOOL:${HALIGN4_NATIVE_ARCH}>>:-march=native>
+            $<$<AND:$<CONFIG:Release>,$<BOOL:${HALIGN5_NATIVE_ARCH}>>:-march=native>
 
     )
 endif()
 
 
-target_compile_definitions(halign4 PRIVATE
+target_compile_definitions(halign5 PRIVATE
         $<$<CONFIG:Debug>:_DEBUG>
 )

@@ -95,7 +95,7 @@ TEST_SUITE("mash")
         CHECK(j13 <= 1.0);
     }
 
-    // Performance test: only run when HALIGN4_RUN_PERF=1 (set by test/run_tests.sh --perf)
+    // Performance test: only run when HALIGN5_RUN_PERF=1 (set by test/run_tests.sh --perf)
     static std::string random_dna(std::mt19937_64 &rng, std::size_t len) {
         static const char bases[4] = {'A','C','G','T'};
         std::string s;
@@ -105,7 +105,7 @@ TEST_SUITE("mash")
     }
 
     TEST_CASE("mash_perf") {
-        const char* env = std::getenv("HALIGN4_RUN_PERF");
+        const char* env = std::getenv("HALIGN5_RUN_PERF");
         if (!env || std::string(env) != "1") {
             DOCTEST_INFO("mash_perf skipped; run run_tests.sh --perf to enable");
             return;

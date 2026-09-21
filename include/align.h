@@ -1,8 +1,8 @@
-// align.h - HAlign-4 序列比对模块核心接口
+// align.h - HAlign-5 序列比对模块核心接口
 // 包括：CIGAR 操作、比对算法（KSW2/WFA2/MM2）、参考序列比对器
 
-#ifndef HALIGN4_ALIGN_H
-#define HALIGN4_ALIGN_H
+#ifndef HALIGN5_ALIGN_H
+#define HALIGN5_ALIGN_H
 #include "utils.h"
 #include "mash.h"
 #include "seed.h"
@@ -330,4 +330,4 @@ namespace align {
 
 } // namespace align
 
-#endif //HALIGN4_ALIGN_H
+#endif //HALIGN5_ALIGN_H

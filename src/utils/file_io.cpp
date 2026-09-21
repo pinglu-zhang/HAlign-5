@@ -194,7 +194,7 @@ namespace file_io {
         }
         ensureParentDirExists(dst);
 
-    #if defined(HALIGN4_HAVE_LIBCURL)
+    #if defined(HALIGN5_HAVE_LIBCURL)
         auto write_cb = [](char* ptr, size_t size, size_t nmemb, void* userdata) -> size_t {
             auto out = static_cast<std::ofstream*>(userdata);
             out->write(ptr, static_cast<std::streamsize>(size * nmemb));

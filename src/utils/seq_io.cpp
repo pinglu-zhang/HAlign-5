@@ -15,15 +15,15 @@
 // zlib 支持：可选的 gzip 压缩文件读取
 #if __has_include(<zlib.h>)
     #include <zlib.h>
-    #define HALIGN4_HAVE_ZLIB 1
+    #define HALIGN5_HAVE_ZLIB 1
 #else
-    #define HALIGN4_HAVE_ZLIB 0
+    #define HALIGN5_HAVE_ZLIB 0
 #endif
 
 #include "kseq.h"
 
 // kseq 初始化：根据是否有 zlib 选择不同的 read 函数
-#if HALIGN4_HAVE_ZLIB
+#if HALIGN5_HAVE_ZLIB
     KSEQ_INIT(gzFile, gzread)
 #else
     static int fileRead(std::FILE* fp, void* buf, int len)
@@ -39,7 +39,7 @@ namespace seq_io
     // KseqReader::Impl 结构体：封装底层文件描述符和 kseq 对象
     struct KseqReader::Impl
     {
-#if HALIGN4_HAVE_ZLIB
+#if HALIGN5_HAVE_ZLIB
         gzFile fp{nullptr};
 #else
         std::FILE* fp{nullptr};
@@ -88,7 +88,7 @@ namespace seq_io
     {
         impl_->file_path = file_path;
 
-#if HALIGN4_HAVE_ZLIB
+#if HALIGN5_HAVE_ZLIB
         impl_->fp = gzopen(file_path.string().c_str(), "rb");
         if (!impl_->fp) {
             throw makeIoError("failed to open input", file_path);
@@ -128,7 +128,7 @@ namespace seq_io
             impl_->seq = nullptr;
         }
 
-#if HALIGN4_HAVE_ZLIB
+#if HALIGN5_HAVE_ZLIB
         if (impl_->fp) {
             gzclose(impl_->fp);
             impl_->fp = nullptr;

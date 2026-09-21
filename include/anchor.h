@@ -1,5 +1,5 @@
-#ifndef HALIGN4_ANCHOR_H
-#define HALIGN4_ANCHOR_H
+#ifndef HALIGN5_ANCHOR_H
+#define HALIGN5_ANCHOR_H
 
 #include <cstdint>
 #include <type_traits>
@@ -182,4 +182,4 @@ namespace anchor
 } // namespace anchor
 
 
-#endif //HALIGN4_ANCHOR_H
+#endif //HALIGN5_ANCHOR_H

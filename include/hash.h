@@ -1,5 +1,5 @@
-#ifndef HALIGN4_HASH_H
-#define HALIGN4_HASH_H
+#ifndef HALIGN5_HASH_H
+#define HALIGN5_HASH_H
 
 #include <cstdint>
 #include <cstring>
@@ -17,4 +17,4 @@ hash_t getHash2bit(std::uint64_t code2bit, std::uint32_t seed = 0);
 
 
 
-#endif //HALIGN4_HASH_H
+#endif //HALIGN5_HASH_H

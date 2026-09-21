@@ -1,10 +1,10 @@
-# HAlign-4 Usage (CLI)
+# HAlign-5 Usage (CLI)
 
-This document explains the command-line arguments of `halign4` and provides runnable examples using the datasets under `test/data/`.
+This document explains the command-line arguments of `halign5` and provides runnable examples using the datasets under `test/data/`.
 
 > Notes
 >
-> - `halign4` needs **two mandatory arguments**: `-i/--input` and `-o/--output`.
+> - `halign5` needs **two mandatory arguments**: `-i/--input` and `-o/--output`.
 > - `-w/--workdir` is optional. If not provided, the program will create a default workdir under the output file directory: `<output-dir>/tmp-<random>`.
 > - Some options are validated by CLI11 at parse time (for example `-i` requires an existing file).
 > - `--msa-tool` supports **keywords** (`minipoa` / `mafft` / `clustalo`) and also supports a **custom command template string**.
@@ -17,7 +17,7 @@ This document explains the command-line arguments of `halign4` and provides runn
 Minimal run (uses built-in defaults):
 
 ```bash
-./build/halign4 \
+./build/halign5 \
   -i test/data/mt1x.fasta.gz \
   -o out.fasta
 ```
@@ -98,13 +98,13 @@ Provide an explicit center/reference sequence file (FASTA).
 Treat `-r/--reference` as a **pre-aligned reference MSA**.
 
 - The program strips `-`/`.` gap columns from each reference record internally and uses that generated FASTA as the reference sequence set.
-- The original aligned file is reused as the reference MSA, so HAlign-4 does not need a separate `--reference-msa` path.
+- The original aligned file is reused as the reference MSA, so HAlign-5 does not need a separate `--reference-msa` path.
 - Validation: `-r/--reference` must be provided, and all records in that file must have the same aligned length.
 
 Example:
 
 ```bash
-./build/halign4 \
+./build/halign5 \
   -i test/data/covid-test.fasta.gz \
   -o covid.out.fasta \
   -w covid.work \
@@ -116,13 +116,13 @@ Example:
 Provide a **pre-aligned reference MSA**.
 
 - Compatibility use: provide an ungapped `-r/--reference` and the corresponding aligned MSA with `--reference-msa`.
-- Convenience use: omit `-r`; HAlign-4 will strip gaps from `--reference-msa` internally to build the reference FASTA.
+- Convenience use: omit `-r`; HAlign-5 will strip gaps from `--reference-msa` internally to build the reference FASTA.
 - Validation: must exist (`CLI::ExistingFile`)
 
 Example:
 
 ```bash
-./build/halign4 \
+./build/halign5 \
   -i test/data/covid-test.fasta.gz \
   -o covid.out.fasta \
   -w covid.work \
@@ -133,7 +133,7 @@ Example:
 Equivalent convenience form:
 
 ```bash
-./build/halign4 \
+./build/halign5 \
   -i test/data/covid-test.fasta.gz \
   -o covid.out.fasta \
   -w covid.work \
@@ -151,7 +151,7 @@ Provide a DNA5 scoring matrix file for reference alignment.
 Example:
 
 ```bash
-./build/halign4 \
+./build/halign5 \
   -i input.fasta \
   -o aligned.fasta \
   --score-matrix score.example.tsv \
@@ -176,7 +176,7 @@ When `-r/--reference` contains multiple reference sequences, `seq2profile` ranks
 #### `--batch-size <int>`
 Alignment batch size used by the reference-alignment phase.
 
-- Default: `0`, which lets HAlign-4 estimate a batch size from the input sequence count.
+- Default: `0`, which lets HAlign-5 estimate a batch size from the input sequence count.
 
 #### `--msa-tool <string>`
 MSA command **keyword** or **command template string**.
@@ -213,7 +213,7 @@ clustalo -i {input} -o {output} --threads {thread}
 
 Important note:
 
-- In `halign4`, **minipoa is the default high-quality aligner** (via the built-in template above).
+- In `halign5`, **minipoa is the default high-quality aligner** (via the built-in template above).
 - In the examples below we use **MAFFT** only because it’s a common MSA tool and its CLI is easy to demonstrate.
 
 Security note:
@@ -279,7 +279,7 @@ Goal:
 Run:
 
 ```bash
-./build/halign4 \
+./build/halign5 \
   -i test/data/mt1x.fasta.gz \
   -o mt1x.out.fasta \
   -w mt1x.work \
@@ -307,7 +307,7 @@ Background:
 #### 2.1 Keep all reference sequences ungapped (`--keep-length`)
 
 ```bash
-./build/halign4 \
+./build/halign5 \
   -i test/data/covid-test.fasta.gz \
   -o covid.out.fasta \
   -w covid.work \
@@ -371,7 +371,7 @@ What to take away:
 
 ## Troubleshooting
 
-- **`--msa-tool` fails at startup even though the tool exists**: `halign4` runs a tiny self-check during argument validation.
+- **`--msa-tool` fails at startup even though the tool exists**: `halign5` runs a tiny self-check during argument validation.
   If it fails, try running the expanded command manually to see stderr, or use a custom template.
-  On Windows/WSL setups, make sure `halign4` and the external MSA tool are in the **same environment** (both in WSL or both native).
+  On Windows/WSL setups, make sure `halign5` and the external MSA tool are in the **same environment** (both in WSL or both native).
 - **Workdir already exists**: remove it, choose a new `-w`, or build/run in Debug mode if your build allows reusing a non-empty workdir.

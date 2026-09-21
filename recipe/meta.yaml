@@ -1,9 +1,9 @@
 package:
-  name: halign4
+  name: halign5
   version: "2.0.0"
 
 source:
-  git_url: https://github.com/pinglu-zhang/HAlign-4.git
+  git_url: https://github.com/pinglu-zhang/HAlign-5.git
   # git_rev: v2.0.0
 
 build:
@@ -32,15 +32,15 @@ requirements:
 
 test:
   commands:
-    - halign4 -h
+    - halign5 -h
     - mafft --version
     - minipoa -h
     - clustalo --version
 
 about:
-  home: https://github.com/pinglu-zhang/HAlign-4
+  home: https://github.com/pinglu-zhang/HAlign-5
   license: MIT
-  summary: "HAlign-4"
+  summary: "HAlign-5"
   description: "HAlign 4: A New Strategy for Rapidly Aligning Millions of Sequences"
   channels:
     - malab

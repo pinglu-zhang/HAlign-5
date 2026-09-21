@@ -569,7 +569,7 @@ TEST_SUITE("align") {
     TEST_CASE("CLI setup - parse --reference-msa") {
         namespace fs = std::filesystem;
 
-        const fs::path dir = fs::current_path() / "halign4_tests_cli_ref_align";
+        const fs::path dir = fs::current_path() / "halign5_tests_cli_ref_align";
         std::error_code ec;
         fs::remove_all(dir, ec);
         fs::create_directories(dir, ec);
@@ -581,11 +581,11 @@ TEST_SUITE("align") {
         const fs::path output = dir / "out.fasta";
 
         Options opt;
-        CLI::App app{"halign4"};
+        CLI::App app{"halign5"};
         setupCli(app, opt);
 
         std::vector<std::string> args = {
-            "halign4",
+            "halign5",
             "-i", input.string(),
             "-o", output.string(),
             "-r", ref.string(),
@@ -607,7 +607,7 @@ TEST_SUITE("align") {
     TEST_CASE("CLI setup - parse aligned reference flag") {
         namespace fs = std::filesystem;
 
-        const fs::path dir = fs::current_path() / "halign4_tests_cli_ref_aligned_flag";
+        const fs::path dir = fs::current_path() / "halign5_tests_cli_ref_aligned_flag";
         std::error_code ec;
         fs::remove_all(dir, ec);
         fs::create_directories(dir, ec);
@@ -618,11 +618,11 @@ TEST_SUITE("align") {
         const fs::path output = dir / "out.fasta";
 
         Options opt;
-        CLI::App app{"halign4"};
+        CLI::App app{"halign5"};
         setupCli(app, opt);
 
         std::vector<std::string> args = {
-            "halign4",
+            "halign5",
             "-i", input.string(),
             "-o", output.string(),
             "-r", ref_align.string(),
@@ -645,7 +645,7 @@ TEST_SUITE("align") {
     TEST_CASE("CLI setup - parse profile reference options") {
         namespace fs = std::filesystem;
 
-        const fs::path dir = fs::current_path() / "halign4_tests_cli_profile_ref_options";
+        const fs::path dir = fs::current_path() / "halign5_tests_cli_profile_ref_options";
         std::error_code ec;
         fs::remove_all(dir, ec);
         fs::create_directories(dir, ec);
@@ -655,11 +655,11 @@ TEST_SUITE("align") {
         const fs::path output = dir / "out.fasta";
 
         Options opt;
-        CLI::App app{"halign4"};
+        CLI::App app{"halign5"};
         setupCli(app, opt);
 
         std::vector<std::string> args = {
-            "halign4",
+            "halign5",
             "-i", input.string(),
             "-o", output.string(),
             "--sketch-kmer-size", "10",
@@ -685,7 +685,7 @@ TEST_SUITE("align") {
     TEST_CASE("CLI setup - parse merge output options") {
         namespace fs = std::filesystem;
 
-        const fs::path dir = fs::current_path() / "halign4_tests_cli_merge_output_options";
+        const fs::path dir = fs::current_path() / "halign5_tests_cli_merge_output_options";
         std::error_code ec;
         fs::remove_all(dir, ec);
         fs::create_directories(dir, ec);
@@ -696,11 +696,11 @@ TEST_SUITE("align") {
         const fs::path insertion_tsv = dir / "insertions.tsv";
 
         Options opt;
-        CLI::App app{"halign4"};
+        CLI::App app{"halign5"};
         setupCli(app, opt);
 
         std::vector<std::string> args = {
-            "halign4",
+            "halign5",
             "-i", input.string(),
             "-o", output.string(),
             "--no-reference-output",
@@ -2152,7 +2152,7 @@ TEST_SUITE("align") {
 // 1. 正确性测试默认运行，用于验证基本功能
 // 2. 性能测试默认跳过（doctest::skip(true)），需要手动启用
 // 3. 运行性能测试：
-//    ./halign4_tests -tc="*Performance*" --no-skip
+//    ./halign5_tests -tc="*Performance*" --no-skip
 // 4. 只运行特定性能测试：
-//    ./halign4_tests -tc="*Short*" --no-skip
+//    ./halign5_tests -tc="*Short*" --no-skip
 // ------------------------------------------------------------------

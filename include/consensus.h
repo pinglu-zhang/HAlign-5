@@ -1,5 +1,5 @@
-#ifndef HALIGN4_CONSENSUS_H
-#define HALIGN4_CONSENSUS_H
+#ifndef HALIGN5_CONSENSUS_H
+#define HALIGN5_CONSENSUS_H
 
 #include <cstddef>
 #include "utils.h"
@@ -212,4 +212,4 @@ namespace consensus
 
 } // namespace consensus
 
-#endif // HALIGN4_CONSENSUS_H
+#endif // HALIGN5_CONSENSUS_H

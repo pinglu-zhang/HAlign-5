@@ -1,8 +1,8 @@
 # Tests
 
-This document explains how to run HAlign-4 tests under the `test/` directory.
+This document explains how to run HAlign-5 tests under the `test/` directory.
 
-HAlign-4 uses **doctest** for unit tests and CTest for registration.
+HAlign-5 uses **doctest** for unit tests and CTest for registration.
 
 ---
 
@@ -47,7 +47,7 @@ cd test
 
 This sets:
 
-- `HALIGN4_RUN_PERF=1`
+- `HALIGN5_RUN_PERF=1`
 
 ### 2.3 Build directory management
 

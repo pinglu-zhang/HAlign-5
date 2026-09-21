@@ -1,5 +1,5 @@
-#ifndef HALIGN4_PREPROCESS_H
-#define HALIGN4_PREPROCESS_H
+#ifndef HALIGN5_PREPROCESS_H
+#define HALIGN5_PREPROCESS_H
 
 #include <cstddef>
 #include "config.hpp"
@@ -90,4 +90,4 @@ void validateRefAlignedConsistency(const FilePath& ref_fasta, const FilePath& re
 
 std::array<int8_t, 25> readScoreMatrixFile(const std::string& path);
 
-#endif //HALIGN4_PREPROCESS_H
+#endif //HALIGN5_PREPROCESS_H

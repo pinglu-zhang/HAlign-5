@@ -38,7 +38,7 @@ static std::string readSingleFastaSequence(const fs::path& fasta) {
 }
 
 static fs::path makeTempDirSimple() {
-    fs::path dir = fs::temp_directory_path() / "halign4_tests_simple";
+    fs::path dir = fs::temp_directory_path() / "halign5_tests_simple";
     std::error_code ec;
     fs::remove_all(dir, ec);
     fs::create_directories(dir, ec);
@@ -66,19 +66,19 @@ static int envInt(const char* name, int def) {
 
 // perf 开关：你已有
 static bool perfEnabled() {
-    const char* v = std::getenv("HALIGN4_RUN_PERF");
+    const char* v = std::getenv("HALIGN5_RUN_PERF");
     return (v != nullptr) && (*v != '\0') && (std::string(v) != "0");
 }
 static bool shouldSkipPerf() { return !perfEnabled(); }
 
 // perf 最大 n：默认 100k，避免默认就尝试 1e6
 static std::size_t perfMaxN() {
-    return envSizeT("HALIGN4_PERF_MAX_N", 100'000);
+    return envSizeT("HALIGN5_PERF_MAX_N", 100'000);
 }
 
 // perf 目录：大数据强制要求用户显式指定，避免写到 build 目录或 /tmp
 static fs::path perfBaseDir() {
-    if (const char* p = std::getenv("HALIGN4_PERF_DIR"); p && *p) {
+    if (const char* p = std::getenv("HALIGN5_PERF_DIR"); p && *p) {
         return fs::path(p);
     }
     return fs::path(); // empty => 未指定
@@ -111,7 +111,7 @@ static void writeLargeAlignedFasta(const fs::path& p, std::size_t n_seqs, std::s
     seq.push_back('\n');
 
     // 可选：写入进度（避免外部 watchdog 认为“无输出卡死”）
-    const std::size_t progress_step = envSizeT("HALIGN4_PERF_PROGRESS_STEP", 0);
+    const std::size_t progress_step = envSizeT("HALIGN5_PERF_PROGRESS_STEP", 0);
 
     for (std::size_t i = 0; i < n_seqs; ++i) {
         char hdr[64];
@@ -139,7 +139,7 @@ static void runOnePerf(std::size_t n_seqs) {
     fs::path base = perfBaseDir();
     if (base.empty()) base = fs::temp_directory_path();
 
-    fs::path dir = base / "halign4_tests_perf";
+    fs::path dir = base / "halign5_tests_perf";
     std::error_code ec;
     fs::create_directories(dir, ec);
     REQUIRE_MESSAGE(!ec, "cannot create perf dir: " << dir.string() << " (" << ec.message() << ")");
@@ -148,8 +148,8 @@ static void runOnePerf(std::size_t n_seqs) {
     fs::path out_fa = dir / ("cons_"    + std::to_string(n_seqs) + ".fasta");
     fs::path out_js = dir / ("counts_"  + std::to_string(n_seqs) + ".json");
 
-    const bool reuse = envInt("HALIGN4_PERF_REUSE_INPUT", 1) != 0;
-    int threads_override = envInt("HALIGN4_PERF_THREADS", 0);
+    const bool reuse = envInt("HALIGN5_PERF_REUSE_INPUT", 1) != 0;
+    int threads_override = envInt("HALIGN5_PERF_THREADS", 0);
     if (threads_override <= 0) {
         unsigned int hc = std::thread::hardware_concurrency();
         threads_override = static_cast<int>(hc ? hc : 1u);
@@ -181,11 +181,11 @@ static void runOnePerf(std::size_t n_seqs) {
         MESSAGE("compute_done: seconds=" << std::chrono::duration<double>(t1 - t0).count()
                 << " out_fa=" << out_fa.string() << " out_js=" << out_js.string());
 
-        if (envInt("HALIGN4_PERF_CLEANUP", 1) != 0) {
+        if (envInt("HALIGN5_PERF_CLEANUP", 1) != 0) {
             cleanup();
         }
     } catch (...) {
-        if (envInt("HALIGN4_PERF_CLEANUP", 1) != 0) {
+        if (envInt("HALIGN5_PERF_CLEANUP", 1) != 0) {
             cleanup();
         }
         throw;

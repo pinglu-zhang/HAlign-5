@@ -15,7 +15,7 @@ namespace fs = std::filesystem;
 
 // perf 开关：你已有
 static bool perfEnabled() {
-    const char* v = std::getenv("HALIGN4_RUN_PERF");
+    const char* v = std::getenv("HALIGN5_RUN_PERF");
     return (v != nullptr) && (*v != '\0') && (std::string(v) != "0");
 }
 static bool shouldSkipPerf() { return !perfEnabled(); }
@@ -24,7 +24,7 @@ static bool shouldSkipPerf() { return !perfEnabled(); }
 
 static fs::path makeTempDir(std::string_view name) {
     fs::path base;
-    if (const char* p = std::getenv("HALIGN4_PERF_DIR"); p && *p) {
+    if (const char* p = std::getenv("HALIGN5_PERF_DIR"); p && *p) {
         base = fs::path(p);
     } else {
         base = fs::current_path(); // 避免某些环境 /tmp 是 tmpfs 或空间受限
@@ -63,7 +63,7 @@ static double toMiB(double bytes) { return bytes / (1024.0 * 1024.0); }
 TEST_SUITE("read_fasta")
 {
     TEST_CASE("KseqReader - smoke read small fasta") {
-        auto dir = makeTempDir("halign4_tests_read_smoke");
+        auto dir = makeTempDir("halign5_tests_read_smoke");
         fs::path in = dir / "small.fasta";
 
         {
@@ -94,13 +94,13 @@ TEST_SUITE("read_fasta")
 }
 TEST_SUITE("read_fasta")
 {
-    // 性能测试：只有 HALIGN4_RUN_PERF=1 才执
+    // 性能测试：只有 HALIGN5_RUN_PERF=1 才执
     TEST_CASE("read time: n=10000 len=30000 (kseq)")
     {
         constexpr std::size_t N   = 10000;
         constexpr std::size_t LEN = 30000;
 
-        auto dir = makeTempDir("halign4_tests_read_perf");
+        auto dir = makeTempDir("halign5_tests_read_perf");
         fs::path in = dir / "aligned_1000_30000.fasta";
         fs::path out = dir / "aligned_1000_30000_out.fasta";
         seq_io::SeqWriter clean_writer(out);

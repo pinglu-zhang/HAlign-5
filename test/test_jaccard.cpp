@@ -26,7 +26,7 @@
 // - 评估：10000 次 "query vs ref" 的 jaccard 计算耗时
 //
 // 注意：性能用例默认跳过，避免 CI/普通测试耗时。
-// 需要时设置环境变量：HALIGN4_RUN_PERF=1
+// 需要时设置环境变量：HALIGN5_RUN_PERF=1
 // ------------------------------------------------------------
 
 namespace {
@@ -196,10 +196,10 @@ TEST_SUITE("jaccard") {
 
     TEST_CASE("jaccard_perf: fixed ref vs 10000 queries (sketch size=2k)")
     {
-        const char* env = std::getenv("HALIGN4_RUN_PERF");
+        const char* env = std::getenv("HALIGN5_RUN_PERF");
         if (!env || std::string(env) != "1")
         {
-            DOCTEST_INFO("jaccard_perf skipped; set HALIGN4_RUN_PERF=1 to enable");
+            DOCTEST_INFO("jaccard_perf skipped; set HALIGN5_RUN_PERF=1 to enable");
             return;
         }
 

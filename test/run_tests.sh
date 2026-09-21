@@ -26,7 +26,7 @@ Options:
   -j, --jobs <n>            Parallel build jobs (passed to cmake --build -j)
   --clean                   Remove build directory before configuring
   --no-verbose              Run ctest without -V
-  --perf                    Enable perf tests (export HALIGN4_RUN_PERF=1)
+  --perf                    Enable perf tests (export HALIGN5_RUN_PERF=1)
   --suite) SUITE="$2"; shift 2;;
   --file)  SOURCE_FILE="$2"; shift 2;;
   -h, --help                Show help
@@ -104,7 +104,7 @@ fi
 # Run tests
 echo "[run_tests] running ctest..."
 if [[ "${RUN_PERF}" -eq 1 ]]; then
-  export HALIGN4_RUN_PERF=1
+  export HALIGN5_RUN_PERF=1
 fi
 
 CTEST_CMD=(ctest --test-dir "${BUILD_DIR}")

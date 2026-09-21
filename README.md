@@ -1,8 +1,8 @@
-# HAlign-4
+# HAlign-5
 
-[![Downloads](https://anaconda.org/malab/halign4/badges/downloads.svg)](https://anaconda.org/malab/halign4)
-[![License](https://anaconda.org/malab/halign4/badges/license.svg)](https://anaconda.org/malab/halign4)
-[![Platforms](https://anaconda.org/malab/halign4/badges/platforms.svg)](https://anaconda.org/malab/halign4)
+[![Downloads](https://anaconda.org/malab/halign5/badges/downloads.svg)](https://anaconda.org/malab/halign5)
+[![License](https://anaconda.org/malab/halign5/badges/license.svg)](https://anaconda.org/malab/halign5)
+[![Platforms](https://anaconda.org/malab/halign5/badges/platforms.svg)](https://anaconda.org/malab/halign5)
 
 [HAlign 4: A New Strategy for Rapidly Aligning Millions of Sequences.](https://doi.org/10.1093/bioinformatics/btae718)
 
@@ -19,14 +19,14 @@ Documentation:
 Conda is the recommended installation method for end users.
 
 ```bash
-conda install -c malab halign4
+conda install -c malab halign5
 ```
 
 Verify:
 
 ```bash
-halign4 --version
-halign4 -h
+halign5 --version
+halign5 -h
 ```
 
 Source installation: see [`docs/install.md`](docs/install.md).
@@ -40,7 +40,7 @@ The repository includes small datasets under `test/data/` which are perfect for 
 Minimal example:
 
 ```bash
-halign4 \
+halign5 \
   -i test/data/mt1x.fasta.gz \
   -o mt1x.out.fasta
 ```
@@ -77,6 +77,6 @@ See [`docs/test.md`](docs/test.md) for how to run tests under the `test/` direct
 
 ## Citation
 
-If you use HAlign-4 in academic work, please cite:
+If you use HAlign-5 in academic work, please cite:
 
 HAlign 4: a new strategy for rapidly aligning millions of sequences. Bioinformatics, 2024, 40(12): btae718. https://doi.org/10.1093/bioinformatics/btae718
