@@ -73,6 +73,17 @@ halign5 -i examples/sim-insertion/queries.fasta \
 Real SARS-CoV-2 data (13 aligned references + 19 Pango lineages) is in
 [`examples/covid/`](examples/covid/). Walkthrough: [`docs/examples.md`](docs/examples.md).
 
+### Real insertions
+
+[`examples/real-insertion/`](examples/real-insertion/) runs the same comparison
+on SARS-CoV-2 genomes from the project's insertion experiment, where a genuine
+12 bp insertion sits between reference positions 21608 and 21609:
+
+- single Wuhan reference, `--keep-length` → **29,903 columns**, every query 13 bp shorter, insertion dropped
+- 3-row reference panel, `-a --keep-length` → **29,997 columns**, every query lossless, insertion kept
+
+`check_insertions.py` in that directory verifies the result.
+
 ---
 
 ## Parameters (overview)

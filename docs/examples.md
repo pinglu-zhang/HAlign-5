@@ -1,10 +1,11 @@
 # Examples
 
-Two runnable examples, both using data that ships with this repository:
+Three runnable examples, all using data that ships with this repository:
 
 | example | what it shows | time |
 |---|---|---|
 | [`examples/sim-insertion/`](../examples/sim-insertion/) | why a **multi-reference** panel keeps insertions that a single reference throws away | seconds |
+| [`examples/real-insertion/`](../examples/real-insertion/) | the same effect on **real SARS-CoV-2** genomes: a genuine 12 bp insertion, dropped by one reference and kept by a panel | seconds |
 | [`examples/covid/`](../examples/covid/) | the multi-reference workflow on **real SARS-CoV-2** genomes (13 references, 19 lineages) | seconds |
 
 Build first ([`install.md`](install.md)); all commands below are run from the
@@ -81,8 +82,36 @@ Output: **32 records** (13 references + 19 queries), **29903 columns**.
 What this dataset demonstrates is the real workflow — Mash-based reference
 selection, profile alignment, shared coordinate projection. It does **not**
 demonstrate insertion retention: these references differ by substitutions and
-deletions, so the alignment does not grow. The synthetic example above is the
-one to use for that. See [`examples/covid/README.md`](../examples/covid/README.md).
+deletions, so the alignment does not grow. See [`examples/covid/README.md`](../examples/covid/README.md)
+for that discussion.
+
+---
+
+## 3. Real insertion retention
+
+[`examples/real-insertion/`](../examples/real-insertion/) shows the effect from
+section 1 on real genomes instead of synthetic ones. It comes from the project's
+own insertion experiment, where a genuine 12 bp insertion (`TCATGCCGCTGT`) sits
+between reference positions 21608 and 21609 in 631 Pango lineages.
+
+```bash
+xz -dc examples/real-insertion/refs.aligned.fasta.xz > /tmp/real.refs.aligned.fasta
+xz -dc examples/real-insertion/wuhan.fasta.xz         > /tmp/real.wuhan.fasta
+xz -dc examples/real-insertion/queries.fasta.xz       > /tmp/real.queries.fasta
+
+# single reference: 29,903 columns, insertion dropped
+halign5 -i /tmp/real.queries.fasta -r /tmp/real.wuhan.fasta \
+        --keep-length -o /tmp/real.single.fasta
+
+# three-row panel: 29,997 columns, insertion kept
+halign5 -i /tmp/real.queries.fasta -r /tmp/real.refs.aligned.fasta -a \
+        --keep-length -o /tmp/real.multi.fasta
+
+python3 examples/real-insertion/check_insertions.py
+```
+
+Output: all five queries lose 13 bp with the single reference and are restored
+exactly by the panel. See [`examples/real-insertion/README.md`](../examples/real-insertion/README.md).
 
 ---
 
@@ -127,3 +156,10 @@ slot index and duplicates `ref_slot`. Rely on `insertion_length` and
 - Pango lineage consensus sequences in `examples/covid/` come from
   <https://github.com/corneliusroemer/pango-sequences>. They are consensus
   genomes, not individual GISAID records.
+- Genomes in `examples/real-insertion/` are extracted from the project's
+  HAlign-4 insertion experiment
+  (`result-new/data/insertion/lineage-period.2025Q1-Q4_2026Q1.halign4-multi.fasta`)
+  and are named by lineage rather than by isolate accession. The underlying
+  sequences originate from GISAID; we gratefully acknowledge the GISAID
+  contributors and submitting laboratories. `make_data.py` in that directory
+  documents the exact extraction.
