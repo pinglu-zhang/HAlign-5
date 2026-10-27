@@ -41,37 +41,22 @@ Source installation: see [`docs/install.md`](docs/install.md).
 
 ## Quick start
 
-The repository includes small datasets under `test/data/` which are perfect for a first run.
+The repository includes small datasets under `test/data/` for a first run, plus
+the runnable examples below.
 
-Minimal example:
-
-```bash
-halign5 \
-  -i test/data/mt1x.fasta.gz \
-  -o mt1x.out.fasta
-```
-
-### See multi-reference keep insertions
+### Multi-reference keeps insertions
 
 With a single reference, insertions relative to that reference are discarded.
-With a pre-aligned reference panel, they are kept. Two bundled examples make
-the difference visible:
+With a pre-aligned reference panel, they are kept.
 
-```bash
-# single reference: 600 columns, insertions lost
-halign5 -i examples/sim-insertion/queries.fasta \
-        -r examples/sim-insertion/refA.fasta \
-        --keep-length --consensus-num 1 -o /tmp/sim.single.fasta
+Runnable examples ship in the repository:
 
-# multi-reference: 651 columns, insertions kept
-halign5 -i examples/sim-insertion/queries.fasta \
-        -r examples/sim-insertion/refs.aligned.fasta -a \
-        --min-profile-references 2 --max-profile-references 3 \
-        --consensus-num 1 -o /tmp/sim.multi.fasta
-```
+- [`examples/sim-insertion/`](examples/sim-insertion/) — synthetic data, the same
+  queries yield 600 columns with one reference and 651 with a multi-reference panel.
+- [`examples/covid/`](examples/covid/) — real SARS-CoV-2 data (13 aligned
+  references + 19 Pango lineages).
 
-Real SARS-CoV-2 data (13 aligned references + 19 Pango lineages) is in
-[`examples/covid/`](examples/covid/). Walkthrough: [`docs/examples.md`](docs/examples.md).
+Command-by-command walkthroughs: [`docs/examples.md`](docs/examples.md).
 
 ---
 
