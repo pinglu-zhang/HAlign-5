@@ -9,6 +9,7 @@
 Documentation:
 
 - Detailed usage & examples: [`docs/usage.md`](docs/usage.md)
+- **Runnable examples**: [`docs/examples.md`](docs/examples.md)
 - Source install & dependencies: [`docs/install.md`](docs/install.md)
 - Tests: [`docs/test.md`](docs/test.md)
 
@@ -16,14 +17,15 @@ Documentation:
 
 ## Install (Conda)
 
-Conda is the recommended installation method for end users.
-
-> **Note:** the `halign5` package is not published on the `malab` channel yet.
-> Until it is, install from source (see [`docs/install.md`](docs/install.md)).
+Conda is the recommended installation method for end users:
 
 ```bash
 conda install -c malab halign5
 ```
+
+The `malab` channel currently hosts **v1.0.0**; the source in this repository
+reports `VERSION 2.0.0`. To run the examples against the checked-out source,
+build from source instead (see [`docs/install.md`](docs/install.md)).
 
 Verify:
 
@@ -47,6 +49,56 @@ halign5 \
   -i test/data/mt1x.fasta.gz \
   -o mt1x.out.fasta
 ```
+
+### See multi-reference keep insertions
+
+With a single reference, insertions relative to that reference are discarded.
+With a pre-aligned reference panel, they are kept. Two bundled examples make
+the difference visible:
+
+```bash
+# single reference: 600 columns, insertions lost
+halign5 -i examples/sim-insertion/queries.fasta \
+        -r examples/sim-insertion/refA.fasta \
+        --keep-length --consensus-num 1 -o /tmp/sim.single.fasta
+
+# multi-reference: 651 columns, insertions kept
+halign5 -i examples/sim-insertion/queries.fasta \
+        -r examples/sim-insertion/refs.aligned.fasta -a \
+        --min-profile-references 2 --max-profile-references 3 \
+        --consensus-num 1 -o /tmp/sim.multi.fasta
+```
+
+Real SARS-CoV-2 data (13 aligned references + 19 Pango lineages) is in
+[`examples/covid/`](examples/covid/). Walkthrough: [`docs/examples.md`](docs/examples.md).
+
+---
+
+## Limitations
+
+- **Insertions relative to the reference are dropped in keep-length mode.**
+  With `-k/--keep-length`, columns that would introduce gaps into a reference
+  are removed, so insertions relative to the reference coordinate system
+  disappear from the output. Without `--keep-length` they are retained in the
+  aligned FASTA (see [`examples/sim-insertion/`](examples/sim-insertion/),
+  where the same queries come out 600 columns with `--keep-length` and 651
+  without). Multi-reference panels also keep the insertions that the panel
+  itself contains.
+- **`--insertions-output` position column is not a genome coordinate.** The TSV
+  reports `query_id`, `ref_id`, `ref_slot`, `ref_pos_1based_after`,
+  `insertion_length` and `insertion_sequence`, but `ref_pos_1based_after` is
+  currently filled from the reference slot index rather than a nucleotide
+  position, so it duplicates `ref_slot`. Treat the insertion sequence and
+  length as the authoritative fields until this is fixed.
+- **External MSA tools are required.** The consensus/insertion alignment step
+  calls an external tool (`minipoa` by default; `mafft` and `clustalo` are also
+  supported).
+- **Small inputs may take a fast path.** When `--keep-length` is off and the
+  input has at most `--consensus-num` records (default 1000), the reference is
+  written through without aligning the queries. Pass `--consensus-num 1` to
+  force the full alignment path on small datasets.
+- **Compressed input is limited to gzip.** xz/bzip2 files must be decompressed
+  first, and input must be a regular file (pipes and `/dev/stdin` are rejected).
 
 ---
 

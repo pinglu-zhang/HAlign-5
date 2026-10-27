@@ -101,14 +101,22 @@ Treat `-r/--reference` as a **pre-aligned reference MSA**.
 - The original aligned file is reused as the reference MSA, so HAlign-5 does not need a separate `--reference-msa` path.
 - Validation: `-r/--reference` must be provided, and all records in that file must have the same aligned length.
 
-Example:
+Note that the bundled `test/data/covid-ref.fasta.gz` is an **ungapped** panel
+(records differ in length), so it must be used **without** `-a`. The
+pre-aligned panel that ships with this repository is
+`examples/covid/covid-refs.aligned.fasta.xz` (xz-compressed; `-a` requires a
+plain FASTA, so decompress it first).
+
+Example with the aligned panel:
 
 ```bash
+xz -dc examples/covid/covid-refs.aligned.fasta.xz > refs.aligned.fasta
+
 ./build/halign5 \
   -i test/data/covid-test.fasta.gz \
   -o covid.out.fasta \
   -w covid.work \
-  -r test/data/covid-ref.aligned.fasta \
+  -r refs.aligned.fasta \
   -a
 ```
 
@@ -122,12 +130,14 @@ Provide a **pre-aligned reference MSA**.
 Example:
 
 ```bash
+xz -dc examples/covid/covid-refs.aligned.fasta.xz > refs.aligned.fasta
+
 ./build/halign5 \
   -i test/data/covid-test.fasta.gz \
   -o covid.out.fasta \
   -w covid.work \
   -r test/data/covid-ref.fasta.gz \
-  --reference-msa test/data/covid-ref.aligned.fasta
+  --reference-msa refs.aligned.fasta
 ```
 
 Equivalent convenience form:
@@ -137,7 +147,7 @@ Equivalent convenience form:
   -i test/data/covid-test.fasta.gz \
   -o covid.out.fasta \
   -w covid.work \
-  --reference-msa test/data/covid-ref.aligned.fasta
+  --reference-msa refs.aligned.fasta
 ```
 
 #### `--score-matrix <path>`
