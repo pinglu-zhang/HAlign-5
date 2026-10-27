@@ -253,17 +253,51 @@ Use the WFA-backed seq2seq path.
 - Default: disabled
 
 #### `-k, --keep-length`
-Keep reference sequences in `-r/--reference` ungapped in the final MSA.
+Keep the **reference MSA column framework** in the final alignment.
 
-- Source-level meaning (matches `RefAligner` implementation):
-  - When set, the pipeline removes alignment columns that would introduce gaps into the reference sequences.
-- If the reference is supplied as an aligned MSA via `-r -a` or `--reference-msa`, this applies to the internally generated gap-stripped reference FASTA.
-- When `-r/--reference` contains multiple reference sequences:
-  - **all** reference sequences are guaranteed to have no inserted gaps.
+Precisely what this does:
+
+- The output keeps the column layout of the reference MSA. No new columns are
+  added for insertions carried by the queries.
+- **Gap columns that already exist in the reference MSA are preserved.** The
+  flag does not "ungap" the references; it only prevents new columns from being
+  introduced for query-side insertions.
+- Insertions that a query carries relative to the reference frame do **not**
+  appear in the main output. They can still be exported with
+  `--insertions-output <path>` (see below) and, for reference-gap slots, are
+  merged according to `--insertion-merge`.
+- As a consequence, the reference MSA column coordinates are **not** the same
+  as any single reference sequence's ungapped coordinates. When a panel of
+  pre-aligned references is used, a position number refers to a column of that
+  panel, not to an offset in one reference genome.
+
+Observed behaviour (240 bp reference, query carrying a 7 bp insertion):
+
+| invocation | contents | insertion |
+|---|---|---|
+| no `--keep-length` | reference + queries, alignment grows | retained in the MSA |
+| `--keep-length` | reference frame width unchanged | not in the MSA |
+| `--keep-length --insertions-output out.tsv` | frame unchanged, plus TSV | recorded in the TSV |
 
 > Important clarification
 >
-> This flag is about **reference sequences from `-r/--reference`** (the "center/reference FASTA"), not about general query sequences.
+> This flag is about the **coordinate framework**, not about making references
+> gap-free. The alignment output deliberately keeps the panel's existing gaps
+> so that column coordinates stay meaningful across the whole panel.
+
+#### About the `--insertions-output` TSV
+
+Columns: `query_id`, `ref_id`, `ref_slot`, `ref_pos_1based_after`,
+`insertion_length`, `insertion_sequence`.
+
+- `ref_slot` identifies the reference column slot **after** which the insertion
+  sits. Insertions at the very start or end of a record are reported against
+  the first/last slot.
+- `ref_pos_1based_after` is currently populated from the same slot index rather
+  than a nucleotide coordinate, so it duplicates `ref_slot`. Treat
+  `insertion_length` and `insertion_sequence` as the authoritative fields.
+- `ref_id` is `consensus` when the alignment was built from a generated
+  consensus reference rather than a user-supplied `-r` file.
 
 
 #### `--save-workdir`
@@ -359,21 +393,39 @@ q1    ACGTTAC
 
 ### Case B: `--keep-length`
 
-- Guarantee: **all references in `-r/--reference` will not contain inserted gaps**.
-- The pipeline will drop columns that would introduce gaps in any reference.
+- Guarantee: the output keeps the **column framework of the reference MSA**.
+  No new columns are created for insertions carried by the queries.
+- Gap columns that the reference MSA **already has** are kept. The flag does
+  not strip them.
+- Query-side insertions relative to that frame are omitted from the main MSA;
+  export them with `--insertions-output`.
 
-Using the original MSA snippet, dropping the column where `ref1` has `-` *and* the column where `ref2` has `-` yields:
+Take the panel
 
 ```text
 ref1  ACGTAC
 ref2  ACGT-C
-q1    ACGTAC
 ```
+
+`ref2` already contains a gap column. With `--keep-length` the output width is
+still 6 columns and that gap stays:
+
+```text
+ref1  ACGTAC
+ref2  ACGT-C
+q1    ACGTAC     # q1's extra T gets no column; it is dropped (or written to the insertion TSV)
+```
+
+Without `--keep-length` the pipeline is free to open a new column for `q1`'s
+extra base, which changes the alignment width.
 
 What to take away:
 
-- Using `--keep-length` will reduce the number of alignment columns (because it removes "reference-gap columns").
-- This ensures all reference sequences maintain their original coordinate system without insertions.
+- With `--keep-length`, the alignment width is governed by the reference MSA,
+  not by the queries.
+- Reference gaps are preserved, so a column index means the same thing across
+  the whole panel — but it does **not** equal an offset in any single ungapped
+  reference genome.
 
 > This toy example is meant to build intuition; exact output depends on the real sequences and the chosen MSA method.
 

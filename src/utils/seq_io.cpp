@@ -175,6 +175,23 @@ namespace seq_io
         }
 
         if (ret == -1) {
+#if HALIGN5_HAVE_ZLIB
+            // kseq 把 zlib 的读取错误也折叠成 EOF(-1)，导致"解压中途失败"被当成正常结束，
+            // 表现为记录变少却不报错。这里显式查询 zlib 的错误状态。
+            if (impl_->fp) {
+                int zerr = Z_OK;
+                (void)gzerror(impl_->fp, &zerr);
+                if (zerr != Z_OK && zerr != Z_STREAM_END) {
+                    int errnum = 0;
+                    const char* msg = gzerror(impl_->fp, &errnum);
+                    throw std::runtime_error(
+                        "failed to decompress '" + impl_->file_path.string() +
+                        "' (zlib code " + std::to_string(zerr) + "): " +
+                        (msg ? msg : "unknown error") +
+                        "; the archive is corrupted or truncated");
+                }
+            }
+#endif
             return false;  // EOF
         }
 

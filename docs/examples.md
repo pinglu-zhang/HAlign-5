@@ -16,8 +16,8 @@ repository root and assume `halign5` is on your `PATH`.
 
 This is the shortest path to seeing what distinguishes multi-reference mode.
 
-**Single reference** — every query is forced back onto one 600 bp genome, so
-any insertion relative to it is discarded:
+**Single reference** — `--keep-length` pins the output to the 600 columns of
+`refA`, so a query's insertion relative to it has nowhere to go:
 
 ```bash
 halign5 -i examples/sim-insertion/queries.fasta \
@@ -28,8 +28,8 @@ halign5 -i examples/sim-insertion/queries.fasta \
 
 Output: **600 columns**, 5 records.
 
-**Multi-reference** — the pre-aligned panel contains the insertions, and they
-survive into the output:
+**Multi-reference** — the pre-aligned panel's 651 columns already contain the
+insertions, so they survive into the output:
 
 ```bash
 halign5 -i examples/sim-insertion/queries.fasta \
@@ -39,6 +39,11 @@ halign5 -i examples/sim-insertion/queries.fasta \
 ```
 
 Output: **651 columns**, 7 records.
+
+The contrast is driven by the reference set, not by `--keep-length` itself:
+without the flag, the single-reference run would also grow to 651 columns for
+these queries. Both runs use the flag so that each is pinned to its own
+reference framework and the only difference left is the panel.
 
 Per-query result (ungapped length / insertions kept):
 

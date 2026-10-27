@@ -129,7 +129,9 @@ uint_t preprocessInputFasta(const std::string input_path, const std::string work
         ++total_records;
         // 对序列进行规范化清洗：例如把字母转为大写，非 AGCTU 替换为 N（具体实现由 seq_io::cleanSequence 提供）。
         // cleanSequence 就地修改 rec.seq，尽量避免重复复制以节省内存带宽。
-        seq_io::cleanSequence(rec.seq);
+        // 必须使用 SeqRecord 重载：只有它会在清洗的同时统计 n_num，
+        // 而 TopKLongestSelector 依赖 n_num 过滤 N 比例过高的候选。
+        seq_io::cleanSequence(rec);
 
         // 将清洗后的记录写入 clean_data 文件夹
         // 注：FastaWriter::write 已经在内部做了拼接与一次性写出的优化，性能友好。
@@ -254,31 +256,33 @@ void alignConsensusSequence(const FilePath& input_file, const FilePath& output_f
         const auto cmd_end = std::chrono::steady_clock::now();
         const double cmd_elapsed = std::chrono::duration_cast<std::chrono::duration<double>>(cmd_end - cmd_start).count();
 
+        // 外部 MSA 的失败必须向上传递：此前这里只记录错误并继续，
+        // 最终仍打印 "All sequences processed" 并以 0 退出，调用方会误以为结果有效。
         if (rc != 0) {
-            spdlog::error("MSA command failed (exit code {}): {}", rc, cmd_str);
-        } else if (verbose) {
+            throw std::runtime_error("MSA command failed with exit code " + std::to_string(rc) +
+                                     ": " + cmd_str);
+        }
+        if (verbose) {
             spdlog::info("MSA command exited with code 0 (success). Elapsed: {:.3f} s", cmd_elapsed);
         }
 
-        // 检查输出文件
-        try {
-            if (std::filesystem::exists(output_file)) {
-                auto out_size = std::filesystem::file_size(output_file);
-                if (verbose) {
-                    spdlog::info("Aligned consensus output exists: {} ({} bytes)", output_file.string(), out_size);
-                }
-                if (out_size == 0) {
-                    spdlog::warn("Aligned consensus output is empty: {}", input_file.string());
-                }
-            } else {
-                spdlog::warn("Aligned consensus output not found after running MSA command: {}", input_file.string());
-            }
-        } catch (const std::exception &e) {
-            spdlog::warn("Failed to stat output file {}: {}", input_file.string(), e.what());
+        // 输出必须存在且非空，否则同样视为失败。
+        if (!std::filesystem::exists(output_file)) {
+            throw std::runtime_error("MSA command produced no output file: " + output_file.string());
+        }
+        const auto out_size = std::filesystem::file_size(output_file);
+        if (verbose) {
+            spdlog::info("Aligned consensus output exists: {} ({} bytes)", output_file.string(), out_size);
+        }
+        if (out_size == 0) {
+            throw std::runtime_error("MSA command produced an empty output file: " + output_file.string());
         }
 
     } catch (const std::exception &e) {
-        spdlog::error("Exception while running MSA command for {}: {}", input_file.string(), e.what());
+        // 缺输入文件是调用方的逻辑问题，直接抛出；其余（无法执行命令等）也一律上抛，
+        // 不再吞掉，避免"失败但退出码为 0"。
+        spdlog::error("Failed to run MSA command for {}: {}", input_file.string(), e.what());
+        throw;
     }
 
     const auto t_end = std::chrono::steady_clock::now();
@@ -286,6 +290,67 @@ void alignConsensusSequence(const FilePath& input_file, const FilePath& output_f
     if (verbose) {
         spdlog::info("Finished consensus alignment. Total elapsed: {:.3f} s", elapsed_s);
     }
+}
+
+// ==============================================================
+// validateOutputFasta
+//
+// 说明：最终结果的发布前检查。只看"文件存在"和"进程结束"不足以证明结果有效：
+// 快速路径曾把参考原样当成输出、外部 MSA 失败也会留下空文件，两者都以 0 退出。
+// 这里对输出本身做结构校验，不满足则抛出异常，让失败真正表现为失败。
+// ==============================================================
+OutputFastaStats validateOutputFasta(const FilePath& output_file,
+                                     std::size_t query_count,
+                                     bool has_reference,
+                                     bool keep_reference)
+{
+    if (!std::filesystem::exists(output_file)) {
+        throw std::runtime_error("Output file was not created: " + output_file.string());
+    }
+    if (std::filesystem::file_size(output_file) == 0) {
+        throw std::runtime_error("Output file is empty: " + output_file.string());
+    }
+
+    seq_io::KseqReader reader(output_file);
+    seq_io::SeqRecord rec;
+
+    OutputFastaStats stats;
+    std::size_t expected_width = 0;
+    bool width_initialized = false;
+
+    while (reader.next(rec)) {
+        if (rec.seq.empty()) {
+            throw std::runtime_error("Output contains an empty sequence record: " + rec.id);
+        }
+        if (!width_initialized) {
+            expected_width = rec.seq.size();
+            width_initialized = true;
+        } else if (rec.seq.size() != expected_width) {
+            throw std::runtime_error(
+                "Output is not a valid alignment: record '" + rec.id + "' has length " +
+                std::to_string(rec.seq.size()) + ", expected " + std::to_string(expected_width));
+        }
+        ++stats.records;
+    }
+
+    if (stats.records == 0) {
+        throw std::runtime_error("Output contains no sequence records: " + output_file.string());
+    }
+
+    // 查询必须全部出现在输出里。参考行是额外写出的，因此下限是 query_count；
+    // 若要求保留参考，则下限再加 1（多参考时实际更多，不能用等号）。
+    const std::size_t required = query_count + ((has_reference && keep_reference) ? 1U : 0U);
+    if (stats.records < required) {
+        throw std::runtime_error(
+            "Output is missing records: found " + std::to_string(stats.records) +
+            ", expected at least " + std::to_string(required) +
+            " (" + std::to_string(query_count) + " query record(s)" +
+            (has_reference && keep_reference ? " + reference" : "") +
+            "). Query sequences were dropped from the alignment.");
+    }
+
+    stats.width = expected_width;
+    return stats;
 }
 
 // ==============================================================

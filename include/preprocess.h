@@ -88,6 +88,35 @@ void alignConsensusSequence(const FilePath& input_file, const FilePath& output_f
 // ==============================================================
 void validateRefAlignedConsistency(const FilePath& ref_fasta, const FilePath& reference_msa);
 
+// ==============================================================
+// validateOutputFasta
+//
+// 说明：校验最终输出 MSA 的结构完整性，失败时抛出 std::runtime_error。
+//
+// 检查项：
+//  1) 文件存在且非空；
+//  2) 至少包含一条记录；
+//  3) 所有记录长度相同（真正的 MSA）；
+//  4) 不使用 --no-reference-output 时，输出记录数必须 > 预处理计数（即至少保留了查询）。
+//
+// 参数：
+//  - output_file      : 待校验的输出 FASTA
+//  - query_count      : 预处理的查询记录数（preproc_count）
+//  - has_reference    : 是否使用了显式参考（-r / --reference-msa）
+//  - keep_reference   : 是否会把参考写进输出（即未设置 --no-reference-output）
+//
+// 返回：输出记录数与对齐宽度
+// ==============================================================
+struct OutputFastaStats {
+    std::size_t records = 0;
+    std::size_t width = 0;
+};
+
+OutputFastaStats validateOutputFasta(const FilePath& output_file,
+                                     std::size_t query_count,
+                                     bool has_reference,
+                                     bool keep_reference);
+
 std::array<int8_t, 25> readScoreMatrixFile(const std::string& path);
 
 #endif //HALIGN5_PREPROCESS_H

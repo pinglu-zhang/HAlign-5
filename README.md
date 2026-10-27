@@ -53,12 +53,13 @@ halign5 \
 
 ### See multi-reference keep insertions
 
-With a single reference, insertions relative to that reference are discarded.
-With a pre-aligned reference panel, they are kept. Two bundled examples make
-the difference visible:
+With a single reference and `--keep-length`, the output is pinned to that
+reference's columns, so insertions relative to it cannot be represented. With a
+pre-aligned reference panel, the panel's columns already include the insertions,
+so they survive. Two bundled examples make the difference visible:
 
 ```bash
-# single reference: 600 columns, insertions lost
+# single reference: 600 columns, insertions cannot be represented
 halign5 -i examples/sim-insertion/queries.fasta \
         -r examples/sim-insertion/refA.fasta \
         --keep-length -o /tmp/sim.single.fasta

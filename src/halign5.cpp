@@ -225,6 +225,16 @@ int main(int argc, char** argv) {
         const uint_t preproc_count = preprocessInputFasta(opt.input, opt.workdir, opt.consensus_num);
         spdlog::info("Preprocessing produced {} records", preproc_count);
 
+        // 输入必须至少包含一条可解析的 FASTA 记录。空文件、纯文本、损坏或被截断的
+        // 压缩文件都会在这里得到 0，若不拒绝，后续流程会产出一个空结果并以 0 退出。
+        if (preproc_count == 0) {
+            throw std::runtime_error(
+                "No FASTA records found in input file '" + opt.input +
+                "'. The file is empty, is not FASTA, or is a corrupted/truncated archive. "
+                "Expected records starting with '>'; note that xz/bzip2 input must be "
+                "decompressed first (only plain FASTA and gzip are read).");
+        }
+
         // 文件路径定义
         const FilePath consensus_unaligned_file = FilePath(opt.workdir) / WORKDIR_DATA / DATA_CLEAN / CLEAN_CONS_UNALIGNED;
         const FilePath consensus_aligned_file = FilePath(opt.workdir) / WORKDIR_DATA / DATA_CLEAN / CLEAN_CONS_ALIGNED;
@@ -244,16 +254,23 @@ int main(int argc, char** argv) {
 
         // 快速路径：序列数 <= consensus_num 且不保留长度时直接输出。
         // 需要过滤参考或输出插入 TSV 时，仍走 RefAligner 合并路径，保证输出选项生效。
-        if (preproc_count <= opt.consensus_num && opt.keep_length == false &&
+        //
+        // 用户显式提供参考（-r 或 --reference-msa）时绝不可走快速路径：该分支会把
+        // 参考原样当作结果输出，查询序列被全部丢弃，且进程仍以 0 退出。
+        const bool has_explicit_reference =
+            !opt.reference_path.empty() || !opt.reference_msa_path.empty();
+        if (!has_explicit_reference &&
+            preproc_count <= opt.consensus_num && opt.keep_length == false &&
             !opt.no_reference_output && opt.insertions_output.empty())
         {
-            if (!opt.reference_msa_path.empty()) {
-                spdlog::info("Using pre-aligned reference MSA directly: {}", opt.reference_msa_path);
-                file_io::copyFile(FilePath(opt.reference_msa_path), FilePath(opt.output));
-            } else {
-                alignConsensusSequence(consensus_unaligned_file, consensus_aligned_file, opt.msa_tool, opt.threads);
-                file_io::copyFile(consensus_aligned_file, FilePath(opt.output));
-            }
+            // 该分支只在没有显式参考时可达：它对参考做一次 MSA 后直接输出，
+            // 不会附加任何查询序列。
+            alignConsensusSequence(consensus_unaligned_file, consensus_aligned_file, opt.msa_tool, opt.threads);
+            file_io::copyFile(consensus_aligned_file, FilePath(opt.output));
+            spdlog::warn("Fast path: {} input record(s) fit under --consensus-num ({}), "
+                         "so no query sequence was aligned into the output. "
+                         "Pass --consensus-num 1 (with --keep-length off) to force the full alignment.",
+                         preproc_count, opt.consensus_num);
             spdlog::info("All sequences processed; final output written to {}", opt.output);
 
             cleanupWorkdir(opt);
@@ -262,7 +279,7 @@ int main(int argc, char** argv) {
         }
         else if (opt.reference_path.empty())
         {
-            // 生成共识序列
+            // 无显式参考：由查询本身生成共识序列
             alignConsensusSequence(consensus_unaligned_file, consensus_aligned_file, opt.msa_tool, opt.threads);
 
             const std::string consensus_string = consensus::generateConsensusSequence(
@@ -308,6 +325,15 @@ int main(int argc, char** argv) {
         merge_options.insertion_tsv_path = FilePath(opt.insertions_output);
         merge_options.insertion_merge_mode = parseInsertionMergeMode(opt.insertion_merge);
         ref_aligner.mergeAlignedResults(opt.output, merge_options);
+
+        // 发布前校验：结构必须是一份合法 MSA，且查询没有被丢掉。
+        const OutputFastaStats stats = validateOutputFasta(
+            FilePath(opt.output),
+            static_cast<std::size_t>(preproc_count),
+            has_explicit_reference,
+            !opt.no_reference_output);
+        spdlog::info("Output validated: {} records, alignment width {}",
+                     stats.records, stats.width);
 
         cleanupWorkdir(opt);
 

@@ -110,11 +110,18 @@ Expected (verified):
 
 ## Why both commands pass --keep-length
 
-`--keep-length` is what makes the comparison meaningful: without it, the
-single-reference run would also grow to accommodate the insertions, and there
-would be nothing to contrast.
+Two independent reasons.
 
-It also keeps these commands short, because HAlign-5 has a **fast path** when
+**1. It creates the contrast.** The two runs differ only in the reference set,
+so they must be compared under the same mode. With `--keep-length` the
+single-reference run is pinned to `refA`'s 600 columns and drops the
+insertions, while the multi-reference run is pinned to the panel's 651 columns
+and keeps them. Without `--keep-length` the single-reference run would itself
+grow to 651 to make room for the insertions, and the 600-vs-651 contrast would
+vanish — the difference you are meant to see comes from the reference panel,
+not from the flag.
+
+**2. It keeps the commands short.** HAlign-5 has a **fast path** when
 `--keep-length` is **off** and the input has at most `--consensus-num` records
 (default 1000): it aligns the reference on its own and writes that through,
 without aligning any query. On this 4-query dataset that fast path would return
@@ -126,8 +133,12 @@ If you drop `--keep-length`, keep the queries from disappearing by passing
 `--consensus-num 1` — see the real-data example in [`../covid/`](../covid/),
 which has a note on this.
 
-The two runs only differ in the reference set, so the extra 51 columns in the
-second run (651 vs 600) are exactly INS1 + INS2 surfacing in the output.
+Measured widths for this dataset:
+
+| reference set | no `--keep-length` | `--keep-length` |
+|---|---:|---:|
+| `refA.fasta` (single) | 651 | **600** |
+| `refs.aligned.fasta` (panel) | 651 | 651 |
 
 ## Reproducing the synthetic data
 

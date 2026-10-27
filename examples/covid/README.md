@@ -92,7 +92,10 @@ xz -dc covid-lineages.fasta.xz | halign5 -i /dev/stdin ...   # fails
 
 ## Why both commands pass --keep-length
 
-`--keep-length` keeps every reference in its original coordinate system.
+`--keep-length` pins the output to the **reference MSA column framework**: the
+alignment width is set by the reference panel, not by what the queries happen to
+carry, and the panel's existing gap columns are preserved. Column numbers
+therefore stay comparable across the whole panel.
 
 It also keeps the commands short, because HAlign-5 has a fast path when
 `--keep-length` is **off** and the input has at most `--consensus-num` records
