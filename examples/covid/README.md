@@ -34,8 +34,7 @@ xz -dc examples/covid/covid-lineages.fasta.xz        > /tmp/lineages.fasta
 ```bash
 halign5 -i /tmp/lineages.fasta \
         -r /tmp/refs.aligned.fasta -a \
-        --min-profile-references 5 --max-profile-references 13 \
-        --consensus-num 1 \
+        --keep-length \
         -o /tmp/covid.multi.fasta
 ```
 
@@ -56,7 +55,7 @@ for rec in lines:
 EOF
 
 halign5 -i /tmp/lineages.fasta -r /tmp/wuhan.fasta \
-        --keep-length --consensus-num 1 \
+        --keep-length \
         -o /tmp/covid.single.fasta
 ```
 
@@ -91,9 +90,17 @@ xz -dc covid-lineages.fasta.xz > lineages.fasta   # right
 xz -dc covid-lineages.fasta.xz | halign5 -i /dev/stdin ...   # fails
 ```
 
-## Why `--consensus-num 1`
+## Why both commands pass --keep-length
 
-With `--keep-length` off and fewer than `--consensus-num` input records
-(default 1000), HAlign-5 takes a fast path that writes the reference through
-without aligning the queries. Setting `--consensus-num 1` forces the real
-alignment path. See [`../sim-insertion/README.md`](../sim-insertion/README.md#why-consensus-num-1-is-needed).
+`--keep-length` keeps every reference in its original coordinate system.
+
+It also keeps the commands short, because HAlign-5 has a fast path when
+`--keep-length` is **off** and the input has at most `--consensus-num` records
+(default 1000): the reference is aligned on its own and written through with no
+queries. On this 19-query dataset that would return only the 13 references. The
+fast-path condition explicitly requires `keep_length == false`, so passing
+`--keep-length` avoids it without any extra flags.
+
+If you need to drop `--keep-length`, pass `--consensus-num 1` so the queries
+are still aligned — see
+[`../sim-insertion/README.md`](../sim-insertion/README.md#why-both-commands-pass---keep-length).

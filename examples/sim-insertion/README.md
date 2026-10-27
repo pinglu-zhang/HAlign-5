@@ -39,7 +39,7 @@ repository root:
 ```bash
 halign5 -i examples/sim-insertion/queries.fasta \
         -r examples/sim-insertion/refA.fasta \
-        --keep-length --consensus-num 1 \
+        --keep-length \
         -o /tmp/sim.single.fasta
 ```
 
@@ -51,8 +51,7 @@ Output: **600 columns**, 5 records. Every query is forced back onto `refA`'s
 ```bash
 halign5 -i examples/sim-insertion/queries.fasta \
         -r examples/sim-insertion/refs.aligned.fasta -a \
-        --min-profile-references 2 --max-profile-references 3 \
-        --consensus-num 1 \
+        --keep-length \
         -o /tmp/sim.multi.fasta
 ```
 
@@ -109,14 +108,23 @@ Expected (verified):
 | `q_cladeC_1` | 600 | 651 | INS1+INS2 kept |
 | `q_outgroup_A` | 600 | 600 | correctly gets no extra columns |
 
-## Why consensus-num 1 is needed
+## Why both commands pass --keep-length
 
-With `--keep-length` off and few queries, HAlign-5 takes a **fast path**: when
-the number of input records is `<= --consensus-num` (default 1000) it writes
-the reference through without aligning the queries. Setting
-`--consensus-num 1` forces the full alignment path. This matters for every
-small example, including the real-data one in
-[`../covid/`](../covid/).
+`--keep-length` is what makes the comparison meaningful: without it, the
+single-reference run would also grow to accommodate the insertions, and there
+would be nothing to contrast.
+
+It also keeps these commands short, because HAlign-5 has a **fast path** when
+`--keep-length` is **off** and the input has at most `--consensus-num` records
+(default 1000): it aligns the reference on its own and writes that through,
+without aligning any query. On this 4-query dataset that fast path would return
+only the 3 reference sequences in 70 columns. The condition explicitly requires
+`keep_length == false`, so passing `--keep-length` skips it and both commands
+run the full alignment path with no extra flags.
+
+If you drop `--keep-length`, keep the queries from disappearing by passing
+`--consensus-num 1` — see the real-data example in [`../covid/`](../covid/),
+which has a note on this.
 
 The two runs only differ in the reference set, so the extra 51 columns in the
 second run (651 vs 600) are exactly INS1 + INS2 surfacing in the output.

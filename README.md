@@ -61,13 +61,12 @@ the difference visible:
 # single reference: 600 columns, insertions lost
 halign5 -i examples/sim-insertion/queries.fasta \
         -r examples/sim-insertion/refA.fasta \
-        --keep-length --consensus-num 1 -o /tmp/sim.single.fasta
+        --keep-length -o /tmp/sim.single.fasta
 
 # multi-reference: 651 columns, insertions kept
 halign5 -i examples/sim-insertion/queries.fasta \
         -r examples/sim-insertion/refs.aligned.fasta -a \
-        --min-profile-references 2 --max-profile-references 3 \
-        --consensus-num 1 -o /tmp/sim.multi.fasta
+        --keep-length -o /tmp/sim.multi.fasta
 ```
 
 Real SARS-CoV-2 data (13 aligned references + 19 Pango lineages) is in

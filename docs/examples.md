@@ -22,7 +22,7 @@ any insertion relative to it is discarded:
 ```bash
 halign5 -i examples/sim-insertion/queries.fasta \
         -r examples/sim-insertion/refA.fasta \
-        --keep-length --consensus-num 1 \
+        --keep-length \
         -o /tmp/sim.single.fasta
 ```
 
@@ -34,8 +34,7 @@ survive into the output:
 ```bash
 halign5 -i examples/sim-insertion/queries.fasta \
         -r examples/sim-insertion/refs.aligned.fasta -a \
-        --min-profile-references 2 --max-profile-references 3 \
-        --consensus-num 1 \
+        --keep-length \
         -o /tmp/sim.multi.fasta
 ```
 
@@ -68,8 +67,7 @@ Align 19 Pango lineage consensus genomes against a 13-genome aligned panel:
 ```bash
 halign5 -i /tmp/lineages.fasta \
         -r /tmp/refs.aligned.fasta -a \
-        --min-profile-references 5 --max-profile-references 13 \
-        --consensus-num 1 \
+        --keep-length \
         -o /tmp/covid.multi.fasta
 ```
 
@@ -94,13 +92,17 @@ regular file — pipes and `/dev/stdin` are rejected:
 xz -dc data.fasta.xz > data.fasta        # then -i data.fasta
 ```
 
-### Small inputs need `--consensus-num 1`
+### Small inputs and the fast path
 
-When `--keep-length` is off and the number of input records is at most
-`--consensus-num` (default 1000), HAlign-5 takes a fast path that writes the
-reference through **without aligning the queries**. That is why every example
-here passes `--consensus-num 1`. If you run a small dataset and the output
-looks like it contains only your reference sequences, this is the reason.
+When `--keep-length` is **off** and the number of input records is at most
+`--consensus-num` (default 1000), HAlign-5 takes a fast path that aligns the
+reference on its own and writes it through **without aligning the queries**. A
+4-query dataset would come out as just the reference records.
+
+All examples here pass `--keep-length`, and the fast-path condition explicitly
+requires `keep_length == false`, so they never enter it. If you drop
+`--keep-length` on a small dataset, pass `--consensus-num 1` to force the full
+alignment path — otherwise the queries silently vanish from the output.
 
 ### `--insertions-output` positions are not genome coordinates
 
