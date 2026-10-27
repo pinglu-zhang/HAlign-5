@@ -75,34 +75,6 @@ Real SARS-CoV-2 data (13 aligned references + 19 Pango lineages) is in
 
 ---
 
-## Limitations
-
-- **Insertions relative to the reference are dropped in keep-length mode.**
-  With `-k/--keep-length`, columns that would introduce gaps into a reference
-  are removed, so insertions relative to the reference coordinate system
-  disappear from the output. Without `--keep-length` they are retained in the
-  aligned FASTA (see [`examples/sim-insertion/`](examples/sim-insertion/),
-  where the same queries come out 600 columns with `--keep-length` and 651
-  without). Multi-reference panels also keep the insertions that the panel
-  itself contains.
-- **`--insertions-output` position column is not a genome coordinate.** The TSV
-  reports `query_id`, `ref_id`, `ref_slot`, `ref_pos_1based_after`,
-  `insertion_length` and `insertion_sequence`, but `ref_pos_1based_after` is
-  currently filled from the reference slot index rather than a nucleotide
-  position, so it duplicates `ref_slot`. Treat the insertion sequence and
-  length as the authoritative fields until this is fixed.
-- **External MSA tools are required.** The consensus/insertion alignment step
-  calls an external tool (`minipoa` by default; `mafft` and `clustalo` are also
-  supported).
-- **Small inputs may take a fast path.** When `--keep-length` is off and the
-  input has at most `--consensus-num` records (default 1000), the reference is
-  written through without aligning the queries. Pass `--consensus-num 1` to
-  force the full alignment path on small datasets.
-- **Compressed input is limited to gzip.** xz/bzip2 files must be decompressed
-  first, and input must be a regular file (pipes and `/dev/stdin` are rejected).
-
----
-
 ## Parameters (overview)
 
 The most important parameters are:

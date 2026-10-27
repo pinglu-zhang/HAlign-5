@@ -108,8 +108,7 @@ The insertion TSV (`query_id`, `ref_id`, `ref_slot`, `ref_pos_1based_after`,
 `insertion_length`, `insertion_sequence`) is useful for extracting insertion
 sequences, but `ref_pos_1based_after` is currently populated from the reference
 slot index and duplicates `ref_slot`. Rely on `insertion_length` and
-`insertion_sequence`; see the note in the top-level
-[README](../README.md#limitations).
+`insertion_sequence`.
 
 ---
 
